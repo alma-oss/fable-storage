@@ -14,7 +14,7 @@ type ToolDir =
     | Local of string
 
 // ========================================================================================================
-// === F# / Fable Library fake build ============================================================== 1.1.0 =
+// === F# / Fable Library fake build ============================================================== 1.2.0 =
 // --------------------------------------------------------------------------------------------------------
 // Options:
 //  - no-clean   - disables clean of dirs in the first step (required on CI)
@@ -33,7 +33,6 @@ type ToolDir =
 
 let project = "Lmc.Fable.Storage"
 let summary = "Fable library for a working with Browser storages."
-let fableLibDir = "Fable.Storage"
 
 let release = ReleaseNotes.parse (System.IO.File.ReadAllLines "CHANGELOG.md" |> Seq.filter ((<>) "## Unreleased"))
 let gitCommit = Information.getCurrentSHA1(".")
@@ -200,7 +199,7 @@ Target.create "Tests" (fun _ ->
 )
 
 Target.create "Release" (fun _ ->
-    DotnetCore.runOrFail "pack" ("src" </> fableLibDir)
+    DotnetCore.runOrFail "pack" ("src" </> project)
 
     Directory.ensure "release"
 
