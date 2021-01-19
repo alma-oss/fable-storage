@@ -13,8 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Decoder.fs" />
-
         <Compile Include="LocalStorage.fs" />
     </ItemGroup>
 
