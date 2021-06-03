@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `LocalStorage.loadItem` function
 
 ## 3.0.0 - 2021-01-19
 - Fix generic functions to be `inline`
