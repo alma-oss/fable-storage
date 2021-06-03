@@ -4,12 +4,15 @@ namespace Lmc.Fable.Storage
 module LocalStorage =
     open Thoth.Json
 
+    let loadItem key =
+        let item = Browser.WebStorage.localStorage.getItem key
+        if isNull item then None
+        else Some item
+
     let inline loadWith (decoder: Decoder<'Data>) key: Result<'Data, string> =
-        let o = Browser.WebStorage.localStorage.getItem key
-        if isNull o then
-            "No item found in local storage with key " + key |> Error
-        else
-            Decode.fromString decoder o
+        match key |> loadItem with
+        | Some item -> Decode.fromString decoder item
+        | _ -> "No item found in local storage with key " + key |> Error
 
     let inline load<'Data> key: Result<'Data, string> =
         key |> loadWith (Decode.Auto.generateDecoder<'Data>())
