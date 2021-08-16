@@ -2,7 +2,7 @@ STORAGE: NONE
 RESTRICTION: == net50
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    Fable.Browser.Event (1.4.4)
+    Fable.Browser.Event (1.4.5)
       Fable.Browser.Gamepad (>= 1.0.3)
       Fable.Core (>= 3.0)
       FSharp.Core (>= 4.7.2)
@@ -13,10 +13,10 @@ NUGET
       Fable.Browser.Event (>= 1.4.4)
       Fable.Core (>= 3.0)
       FSharp.Core (>= 4.7.2)
-    Fable.Core (3.2.7)
+    Fable.Core (3.2.8)
       FSharp.Core (>= 4.7.2)
-    FSharp.Core (5.0.1)
-    Thoth.Json (5.1)
+    FSharp.Core (5.0.2)
+    Thoth.Json (6.0)
       Fable.Core (>= 3.1.6)
       FSharp.Core (>= 4.7.2)
 
@@ -133,7 +133,7 @@ NUGET
     FSharp.Control.Reactive (5.0.2) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.7.2) - restriction: >= netstandard2.0
       System.Reactive (>= 5.0) - restriction: >= netstandard2.0
-    FSharp.Core (5.0.1) - restriction: >= netstandard2.0
+    FSharp.Core (5.0.2) - restriction: >= netstandard2.0
     Microsoft.Bcl.AsyncInterfaces (5.0) - restriction: || (&& (>= monoandroid) (>= net50) (< netcoreapp2.0)) (&& (< monoandroid) (>= net50) (< netcoreapp2.0) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (>= net50) (< netcoreapp2.1) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (>= net50) (< netcoreapp3.0) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (>= monotouch) (>= net50)) (&& (>= net461) (>= net50)) (>= net472) (&& (>= net50) (< netcoreapp2.0) (>= xamarinios)) (&& (>= net50) (< netcoreapp2.0) (>= xamarinmac)) (&& (>= net50) (< netstandard2.0) (>= xamarintvos)) (&& (>= net50) (< netstandard2.0) (>= xamarinwatchos)) (&& (>= net50) (>= uap10.1))
       System.Threading.Tasks.Extensions (>= 4.5.4) - restriction: || (>= net461) (&& (< netcoreapp2.1) (>= netstandard2.0) (< netstandard2.1))
     Microsoft.Build (16.10) - restriction: >= netstandard2.0
@@ -188,27 +188,27 @@ NUGET
     Microsoft.Win32.SystemEvents (5.0) - restriction: && (>= netcoreapp3.0) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
       Microsoft.NETCore.Platforms (>= 5.0) - restriction: >= netcoreapp2.0
     Mono.Posix.NETStandard (1.0) - restriction: >= netstandard2.0
-    MSBuild.StructuredLogger (2.1.500) - restriction: >= netstandard2.0
+    MSBuild.StructuredLogger (2.1.507) - restriction: >= netstandard2.0
       Microsoft.Build (>= 16.4) - restriction: >= netstandard2.0
       Microsoft.Build.Framework (>= 16.4) - restriction: >= netstandard2.0
       Microsoft.Build.Tasks.Core (>= 16.4) - restriction: >= netstandard2.0
       Microsoft.Build.Utilities.Core (>= 16.4) - restriction: >= netstandard2.0
     Newtonsoft.Json (13.0.1) - restriction: >= netstandard2.0
-    NuGet.Common (5.9.1) - restriction: >= netstandard2.0
-      NuGet.Frameworks (>= 5.9.1) - restriction: || (>= net45) (>= netstandard2.0)
-    NuGet.Configuration (5.9.1) - restriction: >= netstandard2.0
-      NuGet.Common (>= 5.9.1) - restriction: || (>= net45) (>= netstandard2.0)
+    NuGet.Common (5.11) - restriction: >= netstandard2.0
+      NuGet.Frameworks (>= 5.11) - restriction: || (>= net45) (>= netstandard2.0)
+    NuGet.Configuration (5.11) - restriction: >= netstandard2.0
+      NuGet.Common (>= 5.11) - restriction: || (>= net45) (>= netstandard2.0)
       System.Security.Cryptography.ProtectedData (>= 4.4) - restriction: && (< net45) (>= netstandard2.0)
-    NuGet.Frameworks (5.9.1) - restriction: >= netstandard2.0
-    NuGet.Packaging (5.9.1) - restriction: >= netstandard2.0
+    NuGet.Frameworks (5.11) - restriction: >= netstandard2.0
+    NuGet.Packaging (5.11) - restriction: >= netstandard2.0
       Newtonsoft.Json (>= 9.0.1) - restriction: >= netstandard2.0
-      NuGet.Configuration (>= 5.9.1) - restriction: >= netstandard2.0
-      NuGet.Versioning (>= 5.9.1) - restriction: >= netstandard2.0
+      NuGet.Configuration (>= 5.11) - restriction: >= netstandard2.0
+      NuGet.Versioning (>= 5.11) - restriction: >= netstandard2.0
       System.Security.Cryptography.Cng (>= 5.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net50)
       System.Security.Cryptography.Pkcs (>= 5.0) - restriction: || (&& (< net472) (>= netstandard2.0)) (>= net50)
-    NuGet.Protocol (5.9.1) - restriction: >= netstandard2.0
-      NuGet.Packaging (>= 5.9.1) - restriction: >= netstandard2.0
-    NuGet.Versioning (5.9.1) - restriction: >= netstandard2.0
+    NuGet.Protocol (5.11) - restriction: >= netstandard2.0
+      NuGet.Packaging (>= 5.11) - restriction: >= netstandard2.0
+    NuGet.Versioning (5.11) - restriction: >= netstandard2.0
     System.Buffers (4.5.1) - restriction: || (&& (>= monoandroid) (>= net50) (< netcoreapp2.0)) (&& (>= monoandroid) (< netcoreapp2.0) (>= netstandard2.0)) (&& (< monoandroid) (< net45) (< netcoreapp2.0) (>= netstandard2.0)) (&& (< monoandroid) (< net46) (< netcoreapp2.0) (>= netstandard2.0) (< netstandard2.1) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (>= net50) (< netcoreapp2.0) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (< netstandard1.1) (>= netstandard2.0) (< win8)) (&& (>= monotouch) (>= net50)) (&& (>= monotouch) (>= netstandard2.0)) (&& (>= net461) (>= net50)) (&& (>= net461) (>= netstandard2.0)) (>= net472) (&& (>= net50) (< netstandard2.0) (>= xamarintvos)) (&& (>= net50) (< netstandard2.0) (>= xamarinwatchos)) (&& (< netstandard1.1) (>= netstandard2.0) (>= win8)) (&& (>= netstandard2.0) (>= uap10.1)) (&& (>= netstandard2.0) (>= xamarintvos)) (&& (>= netstandard2.0) (>= xamarinwatchos)) (>= xamarinios) (>= xamarinmac)
     System.CodeDom (5.0) - restriction: && (< net472) (>= netstandard2.0)
     System.Collections.Immutable (5.0) - restriction: >= netstandard2.0
