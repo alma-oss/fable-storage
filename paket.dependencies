@@ -3,7 +3,8 @@ framework: net5.0
 source https://api.nuget.org/v3/index.json
 storage:none
 
-nuget FSharp.Core
+nuget FSharp.Core ~> 5.0
+
 nuget Fable.Core
 nuget Fable.Browser.WebStorage
 nuget Thoth.Json

@@ -1,4 +1,5 @@
 #load ".fake/build.fsx/intellisense.fsx"
+open System
 open Fake.Core
 open Fake.DotNet
 open Fake.IO
@@ -7,14 +8,8 @@ open Fake.IO.Globbing.Operators
 open Fake.Core.TargetOperators
 open Fake.Tools.Git
 
-type ToolDir =
-    /// Global tool dir must be in PATH - ${PATH}:/root/.dotnet/tools
-    | Global
-    /// Just a dir name, the location will be used as: ./{LocalDirName}
-    | Local of string
-
 // ========================================================================================================
-// === F# / Fable Library fake build ============================================================== 1.2.0 =
+// === F# / Fable Library fake build ============================================================== 2.0.0 =
 // --------------------------------------------------------------------------------------------------------
 // Options:
 //  - no-clean   - disables clean of dirs in the first step (required on CI)
@@ -34,11 +29,21 @@ type ToolDir =
 let project = "Lmc.Fable.Storage"
 let summary = "Fable library for a working with Browser storages."
 
-let release = ReleaseNotes.parse (System.IO.File.ReadAllLines "CHANGELOG.md" |> Seq.filter ((<>) "## Unreleased"))
+let changeLog = Some "CHANGELOG.md"
 let gitCommit = Information.getCurrentSHA1(".")
 let gitBranch = Information.getBranchName(".")
 
-let toolsDir = Global
+[<RequireQualifiedAccess>]
+module ProjectSources =
+    let release =
+        !! "src/**/*.fsproj"
+
+    let tests =
+        !! "tests/**/*.fsproj"
+
+    let all =
+        release
+        ++ "tests/**/*.fsproj"
 
 // --------------------------------------------------------------------------------------------------------
 // 2. Utilities, DotnetCore functions, etc.
@@ -55,59 +60,46 @@ module private Utils =
         then Trace.tracefn "Skipped ..."
         else action p
 
-module private DotnetCore =
-    let run cmd workingDir =
-        let options =
-            DotNet.Options.withWorkingDirectory workingDir
-            >> DotNet.Options.withRedirectOutput true
+    let orFail = function
+        | Error e -> raise e
+        | Ok ok -> ok
 
-        DotNet.exec options cmd ""
+    let stringToOption = function
+        | null | "" -> None
+        | string -> Some string
 
-    let runOrFail cmd workingDir =
-        run cmd workingDir
-        |> tee (fun result ->
-            if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s" cmd workingDir
-        )
+    let envVar name =
+        if Environment.hasEnvironVar(name)
+            then Environment.environVar(name) |> Some
+            else None
+
+    let createProcess exe arg dir =
+        CreateProcess.fromRawCommandLine exe arg
+        |> CreateProcess.withWorkingDirectory dir
+        |> CreateProcess.ensureExitCode
+
+    let run proc arg dir =
+        proc arg dir
+        |> Proc.run
         |> ignore
 
-    let runInRoot cmd = run cmd "."
-    let runInRootOrFail cmd = runOrFail cmd "."
+    [<RequireQualifiedAccess>]
+    module Dotnet =
+        let dotnet = createProcess "dotnet"
 
-    let installOrUpdateTool toolDir tool =
-        let toolCommand action =
-            match toolDir with
-            | Global -> sprintf "tool %s --global %s" action tool
-            | Local dir -> sprintf "tool %s --tool-path ./%s %s" action dir tool
+        let run command dir = try run dotnet command dir |> Ok with e -> Error e
+        let runInRoot command = run command "."
+        let runOrFail command dir = run command dir |> orFail
 
-        match runInRoot (toolCommand "install") with
-        | { ExitCode = code } when code <> 0 ->
-            match runInRoot (toolCommand "update") with
-            | { ExitCode = code } when code <> 0 -> Trace.tracefn "Warning: Install and update of %A has failed." tool
-            | _ -> ()
-        | _ -> ()
+    [<RequireQualifiedAccess>]
+    module Option =
+        let mapNone f = function
+            | Some v -> v
+            | None -> f None
 
-    let execute command args (dir: string) =
-        let cmd =
-            sprintf "%s/%s"
-                (dir.TrimEnd('/'))
-                command
-
-        let processInfo = System.Diagnostics.ProcessStartInfo(cmd)
-        processInfo.RedirectStandardOutput <- true
-        processInfo.RedirectStandardError <- true
-        processInfo.UseShellExecute <- false
-        processInfo.CreateNoWindow <- true
-        processInfo.Arguments <- args |> String.concat " "
-
-        use proc =
-            new System.Diagnostics.Process(
-                StartInfo = processInfo
-            )
-        if proc.Start() |> not then failwith "Process was not started."
-        proc.WaitForExit()
-
-        if proc.ExitCode <> 0 then failwithf "Command '%s' failed in %s." command dir
-        (proc.StandardOutput.ReadToEnd(), proc.StandardError.ReadToEnd())
+        let bindNone f = function
+            | Some v -> Some v
+            | None -> f None
 
 // --------------------------------------------------------------------------------------------------------
 // 3. Targets for FAKE
@@ -123,83 +115,89 @@ Target.create "Clean" <| skipOn "no-clean" (fun _ ->
 
 Target.create "AssemblyInfo" (fun _ ->
     let getAssemblyInfoAttributes projectName =
+        let now = DateTime.Now
+
+        let gitValue fallbackEnvironmentVariableNames initialValue =
+            initialValue
+            |> String.replace "NoBranch" ""
+            |> stringToOption
+            |> Option.bindNone (fun _ -> fallbackEnvironmentVariableNames |> List.tryPick envVar)
+            |> Option.defaultValue "unknown"
+
+        let release =
+            changeLog
+            |> Option.bind (fun changeLog ->
+                try ReleaseNotes.parse (System.IO.File.ReadAllLines changeLog |> Seq.filter ((<>) "## Unreleased")) |> Some
+                with _ -> None
+            )
+
         [
             AssemblyInfo.Title projectName
             AssemblyInfo.Product project
             AssemblyInfo.Description summary
-            AssemblyInfo.Version release.AssemblyVersion
-            AssemblyInfo.FileVersion release.AssemblyVersion
+
+            match release with
+            | Some release ->
+                AssemblyInfo.Version release.AssemblyVersion
+                AssemblyInfo.FileVersion release.AssemblyVersion
+            | _ ->
+                AssemblyInfo.Version "1.0"
+                AssemblyInfo.FileVersion "1.0"
+
             AssemblyInfo.InternalsVisibleTo "tests"
-            AssemblyInfo.Metadata("gitbranch", gitBranch)
-            AssemblyInfo.Metadata("gitcommit", gitCommit)
+            AssemblyInfo.Metadata("gitbranch", gitBranch |> gitValue [ "GIT_BRANCH"; "branch" ])
+            AssemblyInfo.Metadata("gitcommit", gitCommit |> gitValue [ "GIT_COMMIT"; "commit" ])
+            AssemblyInfo.Metadata("buildNumber", "BUILD_NUMBER" |> envVar |> Option.defaultValue "-")
+            AssemblyInfo.Metadata("createdAt", now.ToString("yyyy-MM-dd HH:mm:ss"))
         ]
 
-    let getProjectDetails projectPath =
-        let projectName = System.IO.Path.GetFileNameWithoutExtension(projectPath)
+    let getProjectDetails (projectPath: string) =
+        let projectName = IO.Path.GetFileNameWithoutExtension(projectPath)
         (
             projectPath,
             projectName,
-            System.IO.Path.GetDirectoryName(projectPath),
+            IO.Path.GetDirectoryName(projectPath),
             (getAssemblyInfoAttributes projectName)
         )
 
-    !! "**/*.*proj"
-    -- "example/**/*.*proj"
+    ProjectSources.all
     |> Seq.map getProjectDetails
-    |> Seq.iter (fun (projFileName, _, folderName, attributes) ->
-        match projFileName with
-        | proj when proj.EndsWith("fsproj") -> AssemblyInfoFile.createFSharp (folderName </> "AssemblyInfo.fs") attributes
-        | _ -> ()
+    |> Seq.iter (fun (_, _, folderName, attributes) ->
+        AssemblyInfoFile.createFSharp (folderName </> "AssemblyInfo.fs") attributes
     )
 )
 
 Target.create "Build" (fun _ ->
-    !! "**/*.*proj"
-    -- "example/**/*.*proj"
+    ProjectSources.all
     |> Seq.iter (DotNet.build id)
 )
 
 Target.create "Lint" <| skipOn "no-lint" (fun _ ->
-    DotnetCore.installOrUpdateTool toolsDir "dotnet-fsharplint"
+    let lint project =
+        project
+        |> sprintf "fsharplint lint %s"
+        |> Dotnet.runInRoot
+        |> tee (function Ok _ -> Trace.tracefn "Lint %s is OK" project | _ -> ())
 
-    let checkResult (messages: string list) =
-        let rec check: string list -> unit = function
-            | [] -> failwithf "Lint does not yield a summary."
-            | head :: rest ->
-                if head.Contains "Summary" then
-                    match head.Replace("= ", "").Replace(" =", "").Replace("=", "").Replace("Summary: ", "") with
-                    | "0 warnings" -> Trace.tracefn "Lint: OK"
-                    | warnings -> failwithf "Lint ends up with %s." warnings
-                else check rest
-        messages
-        |> List.rev
-        |> check
+    let errors =
+        ProjectSources.all
+        |> Seq.map lint
+        |> Seq.choose (function Error e -> Some e.Message | _ -> None)
+        |> Seq.toList
 
-    !! "**/*.fsproj"
-    -- "example/**/*.*proj"
-    |> Seq.map (fun fsproj ->
-        match toolsDir with
-        | Global ->
-            DotnetCore.runInRoot (sprintf "fsharplint lint %s" fsproj)
-            |> fun (result: ProcessResult) -> result.Messages
-        | Local dir ->
-            DotnetCore.execute "dotnet-fsharplint" ["lint"; fsproj] dir
-            |> fst
-            |> tee (Trace.tracefn "%s")
-            |> String.split '\n'
-            |> Seq.toList
-    )
-    |> Seq.iter checkResult
+    match errors with
+    | [] -> Trace.tracefn "Lint is OK!"
+    | errors -> errors |> String.concat "\n" |> failwithf "Lint ends with errors:\n%s"
 )
 
 Target.create "Tests" (fun _ ->
-    if !! "tests/*.fsproj" |> Seq.isEmpty
+    if ProjectSources.tests |> Seq.isEmpty
     then Trace.tracefn "There are no tests yet."
-    else DotnetCore.runOrFail "run" "tests"
+    else Dotnet.runOrFail "run" "tests"
 )
 
 Target.create "Release" (fun _ ->
-    DotnetCore.runOrFail "pack" ("src" </> project)
+    Dotnet.runOrFail "pack" ("src" </> project)
 
     Directory.ensure "release"
 
