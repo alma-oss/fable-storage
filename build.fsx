@@ -1,12 +1,4 @@
 #load ".fake/build.fsx/intellisense.fsx"
-open System
-open Fake.Core
-open Fake.DotNet
-open Fake.IO
-open Fake.IO.FileSystemOperators
-open Fake.IO.Globbing.Operators
-open Fake.Core.TargetOperators
-open Fake.Tools.Git
 
 // ========================================================================================================
 // === F# / Fable Library fake build ============================================================== 2.0.0 =
@@ -17,10 +9,21 @@ open Fake.Tools.Git
 // --------------------------------------------------------------------------------------------------------
 // Table of contents:
 //      1. Information about project, configuration
-//      2. Utilities, DotnetCore functions
+//      2. Utilities, Dotnet functions
 //      3. FAKE targets
 //      4. FAKE targets hierarchy
 // ========================================================================================================
+
+open System
+open System.IO
+
+open Fake.Core
+open Fake.DotNet
+open Fake.IO
+open Fake.IO.FileSystemOperators
+open Fake.IO.Globbing.Operators
+open Fake.Core.TargetOperators
+open Fake.Tools.Git
 
 // --------------------------------------------------------------------------------------------------------
 // 1. Information about the project to be used at NuGet and in AssemblyInfo files and other FAKE configuration
@@ -29,24 +32,24 @@ open Fake.Tools.Git
 let project = "Lmc.Fable.Storage"
 let summary = "Fable library for a working with Browser storages."
 
-let changeLog = Some "CHANGELOG.md"
+let changeLog = "CHANGELOG.md"
 let gitCommit = Information.getCurrentSHA1(".")
 let gitBranch = Information.getBranchName(".")
 
 [<RequireQualifiedAccess>]
 module ProjectSources =
-    let release =
+    let library =
         !! "src/**/*.fsproj"
 
     let tests =
-        !! "tests/**/*.fsproj"
+        !! "tests/*.fsproj"
 
     let all =
-        release
-        ++ "tests/**/*.fsproj"
+        library
+        ++ "tests/*.fsproj"
 
 // --------------------------------------------------------------------------------------------------------
-// 2. Utilities, DotnetCore functions, etc.
+// 2. Utilities, Dotnet functions, etc.
 // --------------------------------------------------------------------------------------------------------
 
 [<AutoOpen>]
@@ -60,19 +63,6 @@ module private Utils =
         then Trace.tracefn "Skipped ..."
         else action p
 
-    let orFail = function
-        | Error e -> raise e
-        | Ok ok -> ok
-
-    let stringToOption = function
-        | null | "" -> None
-        | string -> Some string
-
-    let envVar name =
-        if Environment.hasEnvironVar(name)
-            then Environment.environVar(name) |> Some
-            else None
-
     let createProcess exe arg dir =
         CreateProcess.fromRawCommandLine exe arg
         |> CreateProcess.withWorkingDirectory dir
@@ -83,23 +73,22 @@ module private Utils =
         |> Proc.run
         |> ignore
 
-    [<RequireQualifiedAccess>]
-    module Dotnet =
-        let dotnet = createProcess "dotnet"
+    let orFail = function
+        | Error e -> raise e
+        | Ok ok -> ok
 
-        let run command dir = try run dotnet command dir |> Ok with e -> Error e
-        let runInRoot command = run command "."
-        let runOrFail command dir = run command dir |> orFail
+    let stringToOption = function
+        | null | "" -> None
+        | string -> Some string
 
-    [<RequireQualifiedAccess>]
-    module Option =
-        let mapNone f = function
-            | Some v -> v
-            | None -> f None
+[<RequireQualifiedAccess>]
+module Dotnet =
+    let dotnet = createProcess "dotnet"
 
-        let bindNone f = function
-            | Some v -> Some v
-            | None -> f None
+    let run command dir = try run dotnet command dir |> Ok with e -> Error e
+    let runInRoot command = run command "."
+    let runOrFail command dir = run command dir |> orFail
+    let runInRootOrFail command = run command "." |> orFail
 
 // --------------------------------------------------------------------------------------------------------
 // 3. Targets for FAKE
@@ -114,49 +103,26 @@ Target.create "Clean" <| skipOn "no-clean" (fun _ ->
 )
 
 Target.create "AssemblyInfo" (fun _ ->
+    let release = ReleaseNotes.parse (File.ReadAllLines changeLog |> Seq.filter ((<>) "## Unreleased"))
+
     let getAssemblyInfoAttributes projectName =
-        let now = DateTime.Now
-
-        let gitValue fallbackEnvironmentVariableNames initialValue =
-            initialValue
-            |> String.replace "NoBranch" ""
-            |> stringToOption
-            |> Option.bindNone (fun _ -> fallbackEnvironmentVariableNames |> List.tryPick envVar)
-            |> Option.defaultValue "unknown"
-
-        let release =
-            changeLog
-            |> Option.bind (fun changeLog ->
-                try ReleaseNotes.parse (System.IO.File.ReadAllLines changeLog |> Seq.filter ((<>) "## Unreleased")) |> Some
-                with _ -> None
-            )
-
         [
             AssemblyInfo.Title projectName
             AssemblyInfo.Product project
             AssemblyInfo.Description summary
-
-            match release with
-            | Some release ->
-                AssemblyInfo.Version release.AssemblyVersion
-                AssemblyInfo.FileVersion release.AssemblyVersion
-            | _ ->
-                AssemblyInfo.Version "1.0"
-                AssemblyInfo.FileVersion "1.0"
-
+            AssemblyInfo.Version release.AssemblyVersion
+            AssemblyInfo.FileVersion release.AssemblyVersion
             AssemblyInfo.InternalsVisibleTo "tests"
-            AssemblyInfo.Metadata("gitbranch", gitBranch |> gitValue [ "GIT_BRANCH"; "branch" ])
-            AssemblyInfo.Metadata("gitcommit", gitCommit |> gitValue [ "GIT_COMMIT"; "commit" ])
-            AssemblyInfo.Metadata("buildNumber", "BUILD_NUMBER" |> envVar |> Option.defaultValue "-")
-            AssemblyInfo.Metadata("createdAt", now.ToString("yyyy-MM-dd HH:mm:ss"))
+            AssemblyInfo.Metadata("gitbranch", gitBranch)
+            AssemblyInfo.Metadata("gitcommit", gitCommit)
         ]
 
     let getProjectDetails (projectPath: string) =
-        let projectName = IO.Path.GetFileNameWithoutExtension(projectPath)
+        let projectName = Path.GetFileNameWithoutExtension(projectPath)
         (
             projectPath,
             projectName,
-            IO.Path.GetDirectoryName(projectPath),
+            Path.GetDirectoryName(projectPath),
             (getAssemblyInfoAttributes projectName)
         )
 
