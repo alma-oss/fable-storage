@@ -1,4 +1,4 @@
-namespace Lmc.Fable.Storage
+namespace Alma.Fable.Storage
 
 [<RequireQualifiedAccess>]
 module LocalStorage =
