@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- [**BC**] Use net8.0
+- Fix package metadata
 
 ## 5.0.0 - 2023-10-17
 - [**BC**] Use `Alma` namespace
