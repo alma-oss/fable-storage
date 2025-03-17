@@ -3,7 +3,7 @@ framework: net9.0
 source https://api.nuget.org/v3/index.json
 storage:none
 
-nuget FSharp.Core ~> 8.0
+nuget FSharp.Core ~> 9.0
 
 nuget Fable.Core
 nuget Fable.Browser.WebStorage
