@@ -4,8 +4,11 @@
         <OutputType>Library</OutputType>
         <PackageId>Alma.Fable.Storage</PackageId>
         <Version>7.1.0</Version>
-        <RepositoryUrl>https://github.com/almacareer/prc-fable-storage.git</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/almacareer/prc-fable-storage</PackageProjectUrl>
+        <Authors>Almacareer</Authors>
+        <Description>Fable library for a working with Browser storages.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/alma-oss/fable-storage.git</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/alma-oss/fable-storage</PackageProjectUrl>
     </PropertyGroup>
 
     <ItemGroup>
