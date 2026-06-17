@@ -1,0 +1,113 @@
+lockfile_version: '1'
+dependencies: []
+deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fable-storage
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fable-storage/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:15163a1606a671097766b835442c7e3a7c944678cc46368cb7106abac96e032d
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fable-storage/references/anti-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:27aac3bd29505fef012dfc2122d7e3bbf8984547262255ae8cd689b0f614e551
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fable-storage/references/examples.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:a26784620911e050914daee206f44f64c450b191c3ef518e9ec113e1d850c020
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fable-storage/references/preferred-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b4014696fa81bfb8441aea8fa968200baf4c8545487a947a7128b1d6199fc72d
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fable-storage
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fable-storage/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:15163a1606a671097766b835442c7e3a7c944678cc46368cb7106abac96e032d
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fable-storage/references/anti-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:27aac3bd29505fef012dfc2122d7e3bbf8984547262255ae8cd689b0f614e551
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fable-storage/references/examples.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:a26784620911e050914daee206f44f64c450b191c3ef518e9ec113e1d850c020
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fable-storage/references/preferred-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b4014696fa81bfb8441aea8fa968200baf4c8545487a947a7128b1d6199fc72d
+local_deployed_files:
+- .agents/skills/fable-storage
+- .agents/skills/fable-storage/SKILL.md
+- .agents/skills/fable-storage/references/anti-patterns.md
+- .agents/skills/fable-storage/references/examples.md
+- .agents/skills/fable-storage/references/preferred-patterns.md
+- .claude/skills/fable-storage
+- .claude/skills/fable-storage/SKILL.md
+- .claude/skills/fable-storage/references/anti-patterns.md
+- .claude/skills/fable-storage/references/examples.md
+- .claude/skills/fable-storage/references/preferred-patterns.md
+local_deployed_file_hashes:
+  .agents/skills/fable-storage/SKILL.md: sha256:15163a1606a671097766b835442c7e3a7c944678cc46368cb7106abac96e032d
+  .agents/skills/fable-storage/references/anti-patterns.md: sha256:27aac3bd29505fef012dfc2122d7e3bbf8984547262255ae8cd689b0f614e551
+  .agents/skills/fable-storage/references/examples.md: sha256:a26784620911e050914daee206f44f64c450b191c3ef518e9ec113e1d850c020
+  .agents/skills/fable-storage/references/preferred-patterns.md: sha256:b4014696fa81bfb8441aea8fa968200baf4c8545487a947a7128b1d6199fc72d
+  .claude/skills/fable-storage/SKILL.md: sha256:15163a1606a671097766b835442c7e3a7c944678cc46368cb7106abac96e032d
+  .claude/skills/fable-storage/references/anti-patterns.md: sha256:27aac3bd29505fef012dfc2122d7e3bbf8984547262255ae8cd689b0f614e551
+  .claude/skills/fable-storage/references/examples.md: sha256:a26784620911e050914daee206f44f64c450b191c3ef518e9ec113e1d850c020
+  .claude/skills/fable-storage/references/preferred-patterns.md: sha256:b4014696fa81bfb8441aea8fa968200baf4c8545487a947a7128b1d6199fc72d
