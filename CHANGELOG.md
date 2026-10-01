@@ -3,6 +3,7 @@
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
 
+## 10.0.0 - 2026-10-01
 - Update dependencies
 
 ## 9.0.1 - 2026-02-10
