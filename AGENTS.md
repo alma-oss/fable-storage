@@ -1,5 +1,7 @@
 # AGENTS.md — Alma.Fable.Storage
 
+This repo ships Agent Skill for the `Alma.Fable.Storage` library. Compatible agents discover it automatically; see `.agents/skills/fable-storage/SKILL.md`.
+
 ## Project Purpose
 
 Fable (F#→JavaScript) library for working with browser storages (LocalStorage, SessionStorage). Provides typed save/load operations with JSON serialization via Thoth.Json. Published as NuGet package `Alma.Fable.Storage`.
